@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORAL.EXE</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#020706}
+body{cursor:crosshair;font-family:Georgia,serif}
+#scene{position:relative;width:100vw;height:100vh;overflow:hidden;background:radial-gradient(circle at center,#12372f,#071714 45%,#010706);transition:background 4s,filter 2s,transform .2s}
+#art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.82;pointer-events:none;transition:opacity 3s,filter 4s,transform 6s}
+#water{position:absolute;left:0;bottom:0;width:100%;height:40%;z-index:2;background:radial-gradient(ellipse at 50% 0%,rgba(42,120,110,.45),transparent 60%),linear-gradient(to bottom,rgba(5,60,56,.55),rgba(1,9,11,.98));transition:height 5s,filter 4s,opacity 4s}
+#water::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(175deg,transparent 0 18px,rgba(120,210,200,.06) 19px 20px);animation:waterMovement 8s linear infinite}
+@keyframes waterMovement{from{transform:translateY(0)}to{transform:translateY(40px)}}
+#veins{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:none}
+#tumor{position:absolute;left:50%;top:50%;width:180px;height:180px;transform:translate(-50%,-50%);z-index:10;border-radius:57% 43% 49% 51%/48% 57% 43% 52%;background:radial-gradient(circle at 34% 27%,#ffc5c5,#c9444d 9%,#711a27 30%,#300810 62%,#090104);box-shadow:0 0 25px rgba(180,20,35,.8),0 0 90px rgba(130,10,25,.5),inset -20px -20px 35px #050103;cursor:pointer;animation:pulse 3s infinite ease-in-out;transition:width 4s,height 4s,filter 2s,transform .8s}
+#tumor::before{content:"";position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.45),transparent 20%),radial-gradient(circle,transparent 30%,rgba(255,50,60,.2) 65%,transparent 75%);filter:blur(5px)}
+#tumor::after{content:"";position:absolute;inset:-35px;border-radius:50%;border:1px solid rgba(255,30,40,.15);animation:aura 3.5s infinite ease-in-out}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
+@keyframes aura{0%,100%{transform:scale(.8);opacity:.05}50%{transform:scale(1.35);opacity:.75}}
+#instruction{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);z-index:20;color:rgba(255,255,255,.5);font-size:11px;letter-spacing:9px;transition:opacity 2s;pointer-events:none}
+#stageLabel{position:absolute;top:5%;left:5%;z-index:20;font-family:monospace;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.25);opacity:0;transition:opacity 1s}
+#question{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);z-index:80;color:#ff202a;font-size:clamp(18px,3vw,34px);letter-spacing:3px;opacity:0;pointer-events:none;text-shadow:0 0 15px rgba(255,0,0,.7);transition:opacity .4s}
+#flash{position:absolute;inset:0;z-index:100;background:#ff0000;opacity:0;pointer-events:none}
+#glitch{position:absolute;inset:0;z-index:150;opacity:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,0,0,.15) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,transparent 0 8px,rgba(255,0,0,.06) 9px);mix-blend-mode:screen}
+#noise{position:absolute;inset:-30%;z-index:160;opacity:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.25'/%3E%3C/svg%3E");mix-blend-mode:screen}
+#final{position:absolute;inset:0;z-index:300;display:grid;place-items:center;padding:8vw;text-align:center;opacity:0;pointer-events:none;color:#ff2028;font-family:monospace;font-size:clamp(11px,1.5vw,17px);line-height:1.7;letter-spacing:3px;text-shadow:0 0 20px red}
+.corruptedMessage{max-width:900px;word-break:break-word}
+#hiddenAuthorNote{position:absolute;right:5px;bottom:4px;z-index:500;width:260px;font-family:Arial,sans-serif;font-size:7px;line-height:1.3;letter-spacing:.3px;color:#020706;user-select:text;cursor:text}
+body.corrupted #scene{filter:contrast(2.4) saturate(2.5) hue-rotate(-15deg);animation:violentShake 80ms infinite}
+body.corrupted #glitch{opacity:.95;animation:glitchViolent 70ms infinite}
+body.corrupted #noise{opacity:.75;animation:noiseViolent 50ms infinite}
+@keyframes violentShake{0%{transform:translate(0,0)}15%{transform:translate(-8px,3px)}30%{transform:translate(6px,-5px)}45%{transform:translate(-4px,7px)}60%{transform:translate(9px,1px)}75%{transform:translate(-7px,-6px)}100%{transform:translate(3px,4px)}}
+@keyframes glitchViolent{0%{transform:translate(0,0) skewX(0)}20%{transform:translate(20px,-5px) skewX(5deg)}40%{transform:translate(-15px,8px) skewX(-8deg)}60%{transform:translate(30px,3px) skewX(10deg)}80%{transform:translate(-25px,-10px) skewX(-5deg)}100%{transform:translate(10px,5px) skewX(3deg)}}
+@keyframes noiseViolent{0%{transform:translate(0,0)}25%{transform:translate(30px,-20px)}50%{transform:translate(-20px,30px)}75%{transform:translate(25px,20px)}100%{transform:translate(-30px,-25px)}}
+@media(max-width:600px){#tumor{width:145px;height:145px}#instruction{font-size:9px;letter-spacing:5px}#hiddenAuthorNote{width:190px;font-size:6px}}
+</style>
+</head>
+<body>
+<div id="scene">
+<img id="art" src="" alt="Manglar">
+<div id="water"></div>
+<canvas id="veins"></canvas>
+<div id="tumor" aria-label="Organismo interactivo"></div>
+<div id="instruction">LA HERRAMIENTA</div>
+<div id="stageLabel">ORGANISM STATE // 00</div>
+<div id="question">¿vale la pena?</div>
+<div id="flash"></div>
+<div id="glitch"></div>
+<div id="noise"></div>
+<div id="final"></div>
+<div id="hiddenAuthorNote">la página fue desarrollada por medio de IA a petición del docente, personalmente no estoy de acuerdo con su uso</div>
+</div>
+
+<script>
+const scene=document.getElementById("scene"),tumor=document.getElementById("tumor"),water=document.getElementById("water"),art=document.getElementById("art"),canvas=document.getElementById("veins"),ctx=canvas.getContext("2d"),flash=document.getElementById("flash"),glitch=document.getElementById("glitch"),noise=document.getElementById("noise"),finalScreen=document.getElementById("final"),instruction=document.getElementById("instruction"),stageLabel=document.getElementById("stageLabel"),question=document.getElementById("question");
+
+let stage=0,veins=[],particles=[],dead=false,W=innerWidth,H=innerHeight;
+
+function resizeCanvas(){W=innerWidth;H=innerHeight;const d=devicePixelRatio||1;canvas.width=W*d;canvas.height=H*d;canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(d,0,0,d,0,0)}
+resizeCanvas();addEventListener("resize",resizeCanvas);
+
+function redFlash(strength=.75){flash.style.transition="none";flash.style.opacity=strength;requestAnimationFrame(()=>{flash.style.transition="opacity 1.1s ease";flash.style.opacity="0"})}
+
+function createVein(){
+ const cx=W/2,cy=H/2,angle=Math.random()*Math.PI*2,points=[];let x=cx,y=cy,a=angle;
+ const length=220+stage*150+Math.random()*500;
+ for(let i=0;i<length;i+=7){a+=(Math.random()-.5)*(.25+stage*.015);x+=Math.cos(a)*(5+stage*.8);y+=Math.sin(a)*(5+stage*.8);points.push({x,y});if(x<-100||x>W+100||y<-100||y>H+100)break}
+ veins.push({points,progress:0,width:1+stage*.7});
+}
+
+function createParticles(){
+ for(let i=0;i<30+stage*20;i++){const a=Math.random()*Math.PI*2,r=Math.random()*120;particles.push({x:W/2+Math.cos(a)*r,y:H/2+Math.sin(a)*r,vx:Math.cos(a)*(1+Math.random()*4),vy:Math.sin(a)*(1+Math.random()*4),size:1+Math.random()*4,life:1})}
+}
+
+function draw(){
+ ctx.clearRect(0,0,W,H);
+ veins.forEach(v=>{v.progress=Math.min(1,v.progress+.005+stage*.002);const n=Math.max(2,Math.floor(v.points.length*v.progress));ctx.beginPath();ctx.moveTo(v.points[0].x,v.points[0].y);for(let i=1;i<n;i++)ctx.lineTo(v.points[i].x,v.points[i].y);ctx.strokeStyle=`rgba(${110+stage*30},${10+stage*4},${20+stage*3},${.5+stage*.06})`;ctx.lineWidth=v.width;ctx.shadowBlur=10+stage*3;ctx.shadowColor="rgba(180,0,25,.8)";ctx.stroke()});
+ particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.life-=.012;ctx.fillStyle=`rgba(255,40,45,${Math.max(0,p.life)})`;ctx.fillRect(p.x,p.y,p.size,p.size)});
+ particles=particles.filter(p=>p.life>0);requestAnimationFrame(draw);
+}
+draw();
+
+function updateEnvironment(){
+ stageLabel.textContent=`ORGANISM STATE // 0${stage}`;stageLabel.style.opacity="1";
+ const backgrounds=[["#12372f","#071714"],["#17352c","#07110e"],["#39251f","#090806"],["#31191a","#050303"],["#251012","#030202"],["#150608","#010000"],["#080103","#000000"],["#000000","#000000"]];
+ const bg=backgrounds[stage];scene.style.background=`radial-gradient(circle at center,${bg[0]},${bg[1]})`;
+ const waterLevels=[40,37,32,27,20,12,5,0];water.style.height=waterLevels[stage]+"%";
+ const filters=["none","contrast(1.05) saturate(.9)","contrast(1.2) saturate(.7)","contrast(1.35) saturate(.5) brightness(.85)","contrast(1.5) saturate(.3) brightness(.7)","contrast(1.7) saturate(.15) brightness(.5)","contrast(2) saturate(.05) brightness(.3)","contrast(2.4) saturate(0) brightness(.15)"];
+ art.style.filter=filters[stage];
+ const size=180+stage*55;tumor.style.width=size+"px";tumor.style.height=size+"px";
+ for(let i=0;i<7+stage*9;i++)createVein();createParticles();
+ if(stage>=4)water.style.filter="contrast(1.5) brightness(.55)";
+ if(stage>=5){glitch.style.opacity=".22";noise.style.opacity=".12"}
+ if(stage>=6)scene.style.filter="contrast(1.4)";
+ if(stage===7)setTimeout(explode,1300);
+}
+
+tumor.addEventListener("click",()=>{
+ if(dead)return;
+ stage++;
+ redFlash(stage>=6?.9:.7);
+ tumor.style.transform="translate(-50%,-50%) scale(1.3)";
+ setTimeout(()=>{if(!dead)tumor.style.transform="translate(-50%,-50%) scale(1)"},350);
+ instruction.style.opacity="0";updateEnvironment();
+});
+
+document.addEventListener("mousemove",e=>{
+ if(dead)return;
+ tumor.style.marginLeft=((e.clientX/W-.5)*10)+"px";
+ tumor.style.marginTop=((e.clientY/H-.5)*10)+"px";
+});
+
+function showQuestion(){
+ if(dead)return;
+ question.style.opacity="1";question.style.transform="translate(-50%,-50%) scale(1.05)";
+ setTimeout(()=>question.style.opacity="0",1300);
+ setTimeout(()=>question.style.transform="translate(-50%,-50%) scale(1)",1500);
+}
+function randomQuestion(){if(dead)return;showQuestion();setTimeout(randomQuestion,5000+Math.random()*10000)}
+setTimeout(randomQuestion,7000);
+
+function explode(){
+ if(dead)return;dead=true;tumor.style.animation="none";tumor.style.transition="transform .8s ease";tumor.style.transform="translate(-50%,-50%) scale(.7)";
+ setTimeout(()=>{redFlash(1);tumor.style.transform="translate(-50%,-50%) scale(2.5)"},700);
+ setTimeout(()=>{createParticles();createParticles();createParticles();document.body.classList.add("corrupted");tumor.style.transition="transform .5s ease,opacity .4s";tumor.style.transform="translate(-50%,-50%) scale(15)";tumor.style.opacity="0";art.style.transform="scale(1.08)"},1200);
+ setTimeout(()=>{finalScreen.style.opacity="1";violentCorruption()},2200);
+}
+
+function violentCorruption(){
+ const finalTexts=[
+ "respiran tu aire y lo intoxican, partículas polutas en tus pulmones, te ahogaran, te ahogaran, te ahogaran, respiraras aún riendo cuando tu pecho se sienta pesado",
+ "rostros sin alma, mente sin cuerpo, rostros sin alma, mente sin cuerpo, rostros sin alma, mente sin cuerpo, rostros sin alma, mente sin cuerpo, rostros sin alma, mente sin cuerpo, rostros sin alma, mente sin cuerpo",
+ "las islas de calor, derritiendo tu piel, perforando el cielo, tumoración perforante irradiando soles que ignoraran por un momento de un cerebro en blanco",
+ "Consumió hasta que todo fue suyo, pues todos le abrazaban, todo aquello precioso fue consumido, ¿dónde quedó el equilibrio?????",
+ "Su esqueleto tomo lo suyo y se enfrió, ya frio los consoló, pero aunque trague lo vivo, nunca será humano"
+ ];
+ const selectedText=finalTexts[Math.floor(Math.random()*finalTexts.length)];
+ const chars="!@#$%^&*█▓▒░01XØ∆†ERROR";
+ function distortText(text){
+   let result="";
+   for(let i=0;i<text.length;i++){
+     const c=text[i];
+     if(c===" "){result+=" ";continue}
+     const r=Math.random();
+     if(r<.52)result+=chars[Math.floor(Math.random()*chars.length)];
+     else if(r<.78)result+=c.toUpperCase();
+     else result+=c;
+   }
+   return result;
+ }
+ finalScreen.style.opacity="1";
+ setInterval(()=>{
+   finalScreen.innerHTML=`<div class="corruptedMessage">${distortText(selectedText)}</div>`;
+   scene.style.transform=`translate(${Math.random()*35-17}px,${Math.random()*35-17}px) skew(${Math.random()*6-3}deg)`;
+   finalScreen.style.transform=`translate(${Math.random()*25-12}px,${Math.random()*25-12}px) scale(${.8+Math.random()*.5}) skewX(${Math.random()*15-7}deg)`;
+ },70);
+}
+</script>
+</body>
+</html>
